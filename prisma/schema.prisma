@@ -1,0 +1,179 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  username      String    @unique
+  password      String?
+  name          String?
+  bio           String?
+  location      String?
+  avatarUrl     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  cars          Car[]
+  posts         Post[]
+  comments      Comment[]
+  likes         Like[]
+  followers     Follow[]  @relation("follower")
+  following     Follow[]  @relation("following")
+}
+
+// Car model
+model Car {
+  id            String    @id @default(uuid())
+  make          String
+  model         String
+  year          Int
+  trim          String?
+  color         String?
+  horsepower    Int?
+  torque        Int?
+  topSpeed      Int?
+  mpg           Float?
+  description   String?
+  imageUrl      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mods          Mod[]
+  posts         Post[]
+  
+  @@index([userId])
+}
+
+// Modification model
+model Mod {
+  id            String    @id @default(uuid())
+  title         String
+  type          String    // e.g., Performance, Exterior, Interior, etc.
+  description   String?
+  vendor        String?
+  price         Float?
+  installDate   DateTime?
+  installNotes  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  carId         String
+  car           Car       @relation(fields: [carId], references: [id], onDelete: Cascade)
+  images        ModImage[]
+  posts         Post[]
+
+  @@index([carId])
+}
+
+// Mod Image model
+model ModImage {
+  id            String    @id @default(uuid())
+  url           String
+  caption       String?
+  createdAt     DateTime  @default(now())
+
+  // Relations
+  modId         String
+  mod           Mod       @relation(fields: [modId], references: [id], onDelete: Cascade)
+
+  @@index([modId])
+}
+
+// Post model
+model Post {
+  id            String    @id @default(uuid())
+  content       String?
+  imageUrl      String?
+  videoUrl      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  carId         String?
+  car           Car?      @relation(fields: [carId], references: [id], onDelete: SetNull)
+  modId         String?
+  mod           Mod?      @relation(fields: [modId], references: [id], onDelete: SetNull)
+  comments      Comment[]
+  likes         Like[]
+  tags          Tag[]
+
+  @@index([userId])
+  @@index([carId])
+  @@index([modId])
+}
+
+// Comment model
+model Comment {
+  id            String    @id @default(uuid())
+  content       String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId        String
+  post          Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([postId])
+}
+
+// Like model
+model Like {
+  id            String    @id @default(uuid())
+  createdAt     DateTime  @default(now())
+
+  // Relations
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId        String
+  post          Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([userId])
+  @@index([postId])
+}
+
+// Follow model
+model Follow {
+  id            String    @id @default(uuid())
+  createdAt     DateTime  @default(now())
+
+  // Relations
+  followerId    String
+  follower      User      @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId   String
+  following     User      @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+}
+
+// Tag model
+model Tag {
+  id            String    @id @default(uuid())
+  name          String    @unique
+  createdAt     DateTime  @default(now())
+
+  // Relations
+  posts         Post[]
+} 
