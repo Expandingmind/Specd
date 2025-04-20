@@ -103,4 +103,19 @@ This platform allows users to:
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Deployment
+
+### Deploying to Vercel
+
+1. Push your repository to GitHub
+2. Connect your GitHub repository to Vercel
+3. During setup, set the following configuration:
+   - Root Directory: `frontend`
+   - Framework Preset: Next.js
+   - Build Command: `npm run build`
+   - Output Directory: `.next`
+4. Deploy!
+
+**Note**: Make sure you're deploying only the frontend directory and not the entire repository. 
