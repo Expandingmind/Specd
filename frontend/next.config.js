@@ -16,9 +16,6 @@ const nextConfig = {
     ],
     unoptimized: true
   },
-  experimental: {
-    appDir: true
-  },
   output: 'standalone'
 }
 
