@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  swcMinify: true,
   images: {
     domains: [
       'randomuser.me',
@@ -13,7 +14,12 @@ const nextConfig = {
       'www.m3post.com',
       'res.cloudinary.com'
     ],
+    unoptimized: true
   },
+  experimental: {
+    appDir: true
+  },
+  output: 'standalone'
 }
 
 module.exports = nextConfig 
